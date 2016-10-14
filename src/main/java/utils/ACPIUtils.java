@@ -51,7 +51,7 @@ public class ACPIUtils {
 		//被除数
 		BigDecimal dividend = invest.multiply(monthRate).multiply(ratePow);
 		//除数
-		BigDecimal divisor = rate.pow(totalMonth).subtract(BigDecimal.ONE);
+		BigDecimal divisor = ratePow.subtract(BigDecimal.ONE);
 
 		BigDecimal principalAndInterest = dividend.divide(divisor, defaultScale, RoundingMode.HALF_EVEN);
 		return principalAndInterest;
@@ -211,7 +211,7 @@ public class ACPIUtils {
 	 * @param totalMonth 还款总月数
 	 * @return 应还本金总和
 	 */
-	public static double getPclIstCount(BigDecimal invest, BigDecimal yearRate, int totalMonth) {
+	public static BigDecimal getPclIstCount(BigDecimal invest, BigDecimal yearRate, int totalMonth) {
 		//月利率
 		BigDecimal monthRate = yearRate.divide(new BigDecimal(12), defaultScale, RoundingMode.DOWN);
 
@@ -220,7 +220,15 @@ public class ACPIUtils {
 		//(1+月利率)^还款月数
 		BigDecimal ratePow = rate.pow(totalMonth);
 		//贷款本金×月利率
-		BigDecimal investMultiplyMonthRate = invest.multiply(monthRate);
+		BigDecimal investMultiplyMonthRateMultiplyTotalMonth = invest.multiply(monthRate).multiply(new BigDecimal(totalMonth));
+
+		//被除数
+		BigDecimal dividend = investMultiplyMonthRateMultiplyTotalMonth.multiply(ratePow);
+		//除数
+		BigDecimal divisor = ratePow.subtract(BigDecimal.ONE);
+
+		BigDecimal totalPrincipalAndInterest = dividend.divide(divisor, defaultScale, RoundingMode.HALF_EVEN);
+		return totalPrincipalAndInterest;
 	}
 
 	/**
