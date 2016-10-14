@@ -2,15 +2,12 @@ package controllers;
 
 import beans.User;
 import exceptions.ParameterException;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Created by admin on 2016/8/19.

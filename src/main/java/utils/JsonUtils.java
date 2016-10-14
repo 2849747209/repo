@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -35,11 +38,9 @@ public class JsonUtils {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		String json = "{  \n" + "  \"country_id\" : \"China\",  \n" + "  \"birthDate\" : \"1949-10-01\",  \n" + "  \"nation\" : [ \"Han\", \"Meng\", \"Hui\", \"WeiWuEr\", \"Zang\" ],  \n" + "  \"lakes\" : [ \"Qinghai Lake\", \"Poyang Lake\", \"Dongting Lake\", \"Taihu Lake\" ],  \n" + "  \"provinces\" : [ {  \n" + "    \"name\" : \"Shanxi\",  \n" + "    \"population\" : 37751200  \n" + "  }, {  \n" + "    \"name\" : \"ZheJiang\",  \n" + "    \"population\" : 55080000  \n" + "  } ],  \n" + "  \"traffic\" : {  \n" + "    \"HighWay(KM)\" : 4240000,  \n" + "    \"Train(KM)\" : 112000  \n" + "  }  \n" + "}";
 		//JsonNode jsonNode = JsonUtils.hasKey(json, "country_id");
 		System.out.println(JsonUtils.hasKey(json, "traffic/Train(KM)"));
-
-		System.out.println("--------------end-----------");
 	}
 }
