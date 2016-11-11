@@ -42,5 +42,8 @@ public class JsonUtils {
 		String json = "{  \n" + "  \"country_id\" : \"China\",  \n" + "  \"birthDate\" : \"1949-10-01\",  \n" + "  \"nation\" : [ \"Han\", \"Meng\", \"Hui\", \"WeiWuEr\", \"Zang\" ],  \n" + "  \"lakes\" : [ \"Qinghai Lake\", \"Poyang Lake\", \"Dongting Lake\", \"Taihu Lake\" ],  \n" + "  \"provinces\" : [ {  \n" + "    \"name\" : \"Shanxi\",  \n" + "    \"population\" : 37751200  \n" + "  }, {  \n" + "    \"name\" : \"ZheJiang\",  \n" + "    \"population\" : 55080000  \n" + "  } ],  \n" + "  \"traffic\" : {  \n" + "    \"HighWay(KM)\" : 4240000,  \n" + "    \"Train(KM)\" : 112000  \n" + "  }  \n" + "}";
 		//JsonNode jsonNode = JsonUtils.hasKey(json, "country_id");
 		System.out.println(JsonUtils.hasKey(json, "traffic/Train(KM)"));
+		Date date = new Date(1477752945000L);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		System.out.println(sdf.format(date));
 	}
 }

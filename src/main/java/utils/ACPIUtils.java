@@ -12,13 +12,19 @@ import java.util.Map;
  */
 public class ACPIUtils {
 
-	//默认保留小数点后多少位(精度)
-	private static int defaultScale = 64;
+	//金额 默认保留小数点后多少位(精度)
+	private static int defaultCurrencyScale = 2;
+	//金额超出精度时的舍入方式
+	private static RoundingMode defaultCurrencyRoundingMode = RoundingMode.HALF_EVEN;
+	//利率 默认保留小数点后多少位(精度)
+	private static int defaultInterestRateScale = 6;
+	//利率超出精度时的舍入方式
+	private static RoundingMode defaultInterestRateRoundingMode = RoundingMode.HALF_EVEN;
 
 	/**
-	 * 等额本息计算获取还款方式为等额本息的每月偿还本金和利息
+	 * 等额本息的每月偿还 本金和利息
 	 *
-	 * 公式：每月偿还本息 = [贷款本金x月利率x(1+月利率)^还款月数]/[(1+月利率)^还款月数-1]
+	 * 公式: 每月偿还本息 = [贷款本金x月利率x(1+月利率)^还款月数]/[(1+月利率)^还款月数-1]
 	 *
 	 * @param invest 总借款额（贷款本金）
 	 * @param yearRate 年利率
@@ -26,13 +32,15 @@ public class ACPIUtils {
 	 * @return 每月偿还本金和利息
 	 */
 	public static double getPerMonPclIst(double invest, double yearRate, int totalMonth) {
-		return getPerMonPclIst(new BigDecimal(invest), new BigDecimal(yearRate), totalMonth).doubleValue();
+		BigDecimal monPclIst = getPerMonPclIst(new BigDecimal(invest), new BigDecimal(yearRate), totalMonth);
+
+		return monPclIst.doubleValue();
 	}
 
 	/**
-	 * 等额本息计算获取还款方式为等额本息的每月偿还本金和利息
+	 * 等额本息的每月偿还 本金和利息
 	 *
-	 * 公式：每月偿还本息 = [贷款本金x月利率x(1+月利率)^还款月数]/[(1+月利率)^还款月数-1]
+	 * 公式: 每月偿还本息 = [贷款本金x月利率x(1+月利率)^还款月数]/[(1+月利率)^还款月数-1]
 	 *
 	 * @param invest 总借款额（贷款本金）
 	 * @param yearRate 年利率
@@ -41,7 +49,7 @@ public class ACPIUtils {
 	 */
 	public static BigDecimal getPerMonPclIst(BigDecimal invest, BigDecimal yearRate, int totalMonth) {
 		//月利率
-		BigDecimal monthRate = yearRate.divide(new BigDecimal(12), defaultScale, RoundingMode.DOWN);
+		BigDecimal monthRate = yearRate.divide(new BigDecimal(12), defaultInterestRateScale, defaultInterestRateRoundingMode);
 
 		//1+月利率
 		BigDecimal rate = monthRate.add(BigDecimal.ONE);
@@ -53,14 +61,14 @@ public class ACPIUtils {
 		//除数
 		BigDecimal divisor = ratePow.subtract(BigDecimal.ONE);
 
-		BigDecimal principalAndInterest = dividend.divide(divisor, defaultScale, RoundingMode.HALF_EVEN);
-		return principalAndInterest;
+		BigDecimal quotient = dividend.divide(divisor, defaultCurrencyScale, defaultInterestRateRoundingMode);
+		return quotient;
 	}
 
 	/**
-	 * 等额本息计算获取还款方式为等额本息的每月偿还利息
+	 * 等额本息的每月偿还 利息
 	 *
-	 * 公式：每月偿还利息 = 贷款本金×月利率×[(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)]/[(1+月利率)^还款月数-1]
+	 * 公式: 每月偿还利息 = 贷款本金×月利率×[(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)]/[(1+月利率)^还款月数-1]
 	 *
 	 * @param invest 总借款额(贷款本金)
 	 * @param yearRate 年利率
@@ -79,9 +87,9 @@ public class ACPIUtils {
 	}
 
 	/**
-	 * 等额本息计算获取还款方式为等额本息的每月偿还利息
+	 * 等额本息的每月偿还 利息
 	 *
-	 * 公式：每月偿还利息 = 贷款本金×月利率×[(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)]/[(1+月利率)^还款月数-1]
+	 * 公式: 每月偿还利息 = 贷款本金×月利率×[(1+月利率)^还款月数-(1+月利率)^(还款月序号-1)]/[(1+月利率)^还款月数-1]
 	 *
 	 * @param invest 总借款额(贷款本金)
 	 * @param yearRate 年利率
@@ -90,7 +98,7 @@ public class ACPIUtils {
 	 */
 	public static Map<Integer, BigDecimal> getPerMonIst(BigDecimal invest, BigDecimal yearRate, int totalMonth) {
 		//月利率
-		BigDecimal monthRate = yearRate.divide(new BigDecimal(12), defaultScale, RoundingMode.DOWN);
+		BigDecimal monthRate = yearRate.divide(new BigDecimal(12), defaultInterestRateScale, defaultInterestRateRoundingMode);
 
 		//1+月利率
 		BigDecimal rate = monthRate.add(BigDecimal.ONE);
@@ -103,14 +111,25 @@ public class ACPIUtils {
 		Map<Integer, BigDecimal> monthInterest = new HashMap<Integer, BigDecimal>(totalMonth);
 		for (int i=1; i<=totalMonth; i++) {
 			BigDecimal dividend = investMultiplyMonthRate.multiply(ratePow.subtract(rate.pow(i - 1)));
-			monthInterest.put(i, dividend.divide(divisor, defaultScale, RoundingMode.HALF_EVEN));
+			BigDecimal quotient = dividend.divide(divisor, defaultCurrencyScale, defaultInterestRateRoundingMode);
+			monthInterest.put(i, quotient);
 		}
+
+		/*BigDecimal perMonPclIst = getPerMonPclIst(invest, yearRate, totalMonth);
+		Map<Integer, BigDecimal> monthPrincipal = getPerMonPcl(invest, yearRate, totalMonth);
+		Map<Integer, BigDecimal> monthInterest = new HashMap<Integer, BigDecimal>(totalMonth);
+		for (int i=1; i<=totalMonth; i++) {
+			BigDecimal principal = monthPrincipal.get(i);
+			monthInterest.put(i, perMonPclIst.subtract(principal));
+		}*/
 
 		return monthInterest;
 	}
 
 	/**
-	 * 等额本息计算获取还款方式为等额本息的每月偿还本金
+	 * 等额本息的每月偿还 本金
+	 *
+	 * 公式: 每月偿还本息 = [贷款本金×月利率×(1+月利率)^(还款月序号-1)]/[(1+月利率)^还款月数-1]
 	 *
 	 * @param invest 总借款额(贷款本金)
 	 * @param yearRate 年利率
@@ -130,33 +149,48 @@ public class ACPIUtils {
 	}
 
 	/**
-	 * B=Mr(1+r)^(n-1)÷[(1+r)^N-1]
-	 * BX=等额本息还贷每月所还本金和利息总额，
-	 * B=等额本息还贷每月所还本金，
-	 * M=贷款总金额
-	 * r=贷款月利率（年利率除12），
-	 * N=还贷总期数（即总月数）
-	 * n=第n期还贷数
-	 * ^=乘方计算（即X^12=X的12次方）
+	 * 等额本息的每月偿还 本金
+	 *
+	 * 公式: 每月偿还本息 = [贷款本金×月利率×(1+月利率)^(还款月序号-1)]/[(1+月利率)^还款月数-1]
+	 *
 	 * @param invest
 	 * @param yearRate
 	 * @param totalMonth
 	 * @return
 	 */
 	public static Map<Integer, BigDecimal> getPerMonPcl(BigDecimal invest, BigDecimal yearRate, int totalMonth) {
-		BigDecimal principalAndInterest = getPerMonPclIst(invest, yearRate, totalMonth);
-		Map<Integer, BigDecimal> monthInterest = getPerMonIst(invest, yearRate, totalMonth);
+		//月利率
+		BigDecimal monthRate = yearRate.divide(new BigDecimal(12), defaultInterestRateScale, defaultInterestRateRoundingMode);
+		//1+月利率
+		BigDecimal rate = monthRate.add(BigDecimal.ONE);
+		//(1+月利率)^还款月数
+		BigDecimal ratePow = rate.pow(totalMonth);
+		//贷款本金×月利率
+		BigDecimal investMultiplyMonthRate = invest.multiply(monthRate);
 
+		BigDecimal divisor = rate.pow(totalMonth).subtract(BigDecimal.ONE);
 		Map<Integer, BigDecimal> monthPrincipal = new HashMap<Integer, BigDecimal>(totalMonth);
-		for (Map.Entry<Integer, BigDecimal> entry : monthInterest.entrySet()) {
-			monthPrincipal.put(entry.getKey(), principalAndInterest.subtract(entry.getValue()));
+		/*BigDecimal accumulate = BigDecimal.ZERO;
+		for (int i=1, len=totalMonth-1; i<=len; i++) {
+			BigDecimal dividend = investMultiplyMonthRate.multiply(rate.pow(i - 1));
+			BigDecimal quotient = dividend.divide(divisor, defaultCurrencyScale, RoundingMode.HALF_EVEN);
+			monthPrincipal.put(i, quotient);
+
+			accumulate = accumulate.add(quotient);
+		}
+		monthPrincipal.put(totalMonth, invest.subtract(accumulate));*/
+
+		for (int i=1; i<=totalMonth; i++) {
+			BigDecimal dividend = investMultiplyMonthRate.multiply(rate.pow(i - 1));
+			BigDecimal quotient = dividend.divide(divisor, defaultCurrencyScale, defaultCurrencyRoundingMode);
+			monthPrincipal.put(i, quotient);
 		}
 
 		return monthPrincipal;
 	}
 
 	/**
-	 * 等额本息计算获取还款方式为等额本息的总利息
+	 * 等额本息的 总利息
 	 *
 	 * @param invest 总借款额(贷款本金)
 	 * @param yearRate 年利率
@@ -165,11 +199,12 @@ public class ACPIUtils {
 	 */
 	public static double getInterestCount(double invest, double yearRate, int totalMonth) {
 		BigDecimal count = getInterestCount(new BigDecimal(invest), new BigDecimal(yearRate), totalMonth);
+
 		return count.doubleValue();
 	}
 
 	/**
-	 * 等额本息计算获取还款方式为等额本息的总利息
+	 * 等额本息的 总利息
 	 *
 	 * @param invest 总借款额(贷款本金)
 	 * @param yearRate 年利率
@@ -188,32 +223,61 @@ public class ACPIUtils {
 	}
 
 	/**
-	 * 应还本金总和
-	 * 公式:贷款本金×贷款本金×月利率×(1+月利率)^还款月数/[(1+月利率)^还款月数-1]
+	 * 等额本息的 总本金
+	 *
 	 * @param invest 总借款额(贷款本金)
 	 * @param yearRate 年利率
 	 * @param totalMonth 还款总月数
-	 * @return 应还本金总和
+	 * @return 总利息
 	 */
-	public static double getPclIstCount(double invest, double yearRate, int totalMonth) {
-		double monthRate = yearRate / 12;
-		BigDecimal perMonthInterest = new BigDecimal(invest).multiply(new BigDecimal(monthRate * Math.pow(1 + monthRate, totalMonth))).divide(new BigDecimal(Math.pow(1 + monthRate, totalMonth) - 1), 2, BigDecimal.ROUND_DOWN);
-		BigDecimal count = perMonthInterest.multiply(new BigDecimal(totalMonth));
-		count = count.setScale(2, BigDecimal.ROUND_DOWN);
+	public static double getPrincipalCount(double invest, double yearRate, int totalMonth) {
+		BigDecimal count = getPrincipalCount(new BigDecimal(invest), new BigDecimal(yearRate), totalMonth);
+
 		return count.doubleValue();
 	}
 
 	/**
-	 * 应还本金总和
-	 * 公式:贷款本金×月利率×还款月数×(1+月利率)^还款月数/[(1+月利率)^还款月数-1]
+	 * 等额本息的 总本金
+	 *
 	 * @param invest 总借款额(贷款本金)
 	 * @param yearRate 年利率
 	 * @param totalMonth 还款总月数
-	 * @return 应还本金总和
+	 * @return 总利息
+	 */
+	public static BigDecimal getPrincipalCount(BigDecimal invest, BigDecimal yearRate, int totalMonth) {
+		BigDecimal count = BigDecimal.ZERO;
+
+		Map<Integer, BigDecimal> monthPrincipal = getPerMonPcl(invest, yearRate, totalMonth);
+		for (Map.Entry<Integer, BigDecimal> entry : monthPrincipal.entrySet()) {
+			count = count.add(entry.getValue());
+		}
+
+		return count;
+	}
+
+	/**
+	 * 等额本息的 本息总和
+	 * 公式: 贷款本金×贷款本金×月利率×(1+月利率)^还款月数/[(1+月利率)^还款月数-1]
+	 * @param invest 总借款额(贷款本金)
+	 * @param yearRate 年利率
+	 * @param totalMonth 还款总月数
+	 * @return 应还本息总和
+	 */
+	public static double getPclIstCount(double invest, double yearRate, int totalMonth) {
+		return getPclIstCount(new BigDecimal(invest), new BigDecimal(yearRate), totalMonth).doubleValue();
+	}
+
+	/**
+	 * 等额本息的 本息总和
+	 * 公式: 贷款本金×月利率×还款月数×(1+月利率)^还款月数/[(1+月利率)^还款月数-1]
+	 * @param invest 总借款额(贷款本金)
+	 * @param yearRate 年利率
+	 * @param totalMonth 还款总月数
+	 * @return 应还本息总和
 	 */
 	public static BigDecimal getPclIstCount(BigDecimal invest, BigDecimal yearRate, int totalMonth) {
 		//月利率
-		BigDecimal monthRate = yearRate.divide(new BigDecimal(12), defaultScale, RoundingMode.DOWN);
+		BigDecimal monthRate = yearRate.divide(new BigDecimal(12), defaultInterestRateScale, defaultInterestRateRoundingMode);
 
 		//1+月利率
 		BigDecimal rate = monthRate.add(BigDecimal.ONE);
@@ -227,37 +291,26 @@ public class ACPIUtils {
 		//除数
 		BigDecimal divisor = ratePow.subtract(BigDecimal.ONE);
 
-		BigDecimal totalPrincipalAndInterest = dividend.divide(divisor, defaultScale, RoundingMode.HALF_EVEN);
-		return totalPrincipalAndInterest;
+		BigDecimal totalPclIst = dividend.divide(divisor, defaultCurrencyScale, defaultCurrencyRoundingMode);
+		return totalPclIst;
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		double invest = 20000; // 本金
-		int month = 12;
-		double yearRate = 0.15; // 年利率
-		double perMonthPrincipalInterest = getPerMonPclIst(invest, yearRate, month);
-		System.out.println("等额本息---每月还款本息：" + perMonthPrincipalInterest);
-		Map<Integer, Double> mapInterest = getPerMonIst(invest, yearRate, month);
+		BigDecimal invest = new BigDecimal("6000"); // 本金
+		int month = 3;
+		BigDecimal yearRate = new BigDecimal("0.1008"); // 年利率
+		Map<Integer, BigDecimal> mapInterest = getPerMonIst(invest, yearRate, month);
 		System.out.println("等额本息---每月还款利息：" + mapInterest);
-		Map<Integer, Double> mapPrincipal = getPerMonPcl(invest, yearRate, month);
+		Map<Integer, BigDecimal> mapPrincipal = getPerMonPcl(invest, yearRate, month);
 		System.out.println("等额本息---每月还款本金：" + mapPrincipal);
-		double count = getInterestCount(invest, yearRate, month);
-		System.out.println("等额本息---总利息：" + count);
-		double principalInterestCount = getPclIstCount(invest, yearRate, month);
-		System.out.println("等额本息---应还本息总和：" + principalInterestCount);
-
-		System.out.println("月利率:" + yearRate/12);
-
-		/**
-		 等额本息---每月还款本息：1805.1662469031387
-		 等额本息---每月还款利息：{1=249.99, 2=230.56, 3=210.87, 4=190.94, 5=170.77, 6=150.34, 7=129.65, 8=108.71, 9=87.50, 10=66.03, 11=44.29, 12=22.28}
-		 等额本息---每月还款本金：{1=1555.17, 2=1574.60, 3=1594.29, 4=1614.22, 5=1634.39, 6=1654.82, 7=1675.51, 8=1696.45, 9=1717.66, 10=1739.13, 11=1760.87, 12=1782.88}
-		 等额本息---总利息：1661.93
-		 等额本息---应还本息总和：21661.92
-		 月利率:0.012499999999999999
-		 */
+		BigDecimal perMonPclIst = getPerMonPclIst(invest, yearRate, month);
+		System.out.println("等额本息---每月还款本息：" + perMonPclIst);
+		BigDecimal interestCount = getInterestCount(invest, yearRate, month);
+		System.out.println("等额本息---总利息：" + interestCount);
+		BigDecimal principalCount = getPrincipalCount(invest, yearRate, month);
+		System.out.println("等额本息---总本金：" + principalCount);
+		BigDecimal principalInterestCount = getPclIstCount(invest, yearRate, month);
+		System.out.println("等额本息---本息总和：" + principalInterestCount);
+		System.out.println("月利率:" + yearRate.divide(new BigDecimal(12), defaultInterestRateScale, defaultInterestRateRoundingMode));
 	}
 }

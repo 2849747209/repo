@@ -1,6 +1,9 @@
 package services;
 
+import org.apache.log4j.spi.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CountDownLatch;
@@ -11,6 +14,9 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Service
 public class Services {
+
+	private final static Logger logger = org.slf4j.LoggerFactory.getLogger(Services.class);
+
 	public void serviceSayHello() {
 		System.out.println("this is Services");
 	}
@@ -35,5 +41,10 @@ public class Services {
 		}
 
 		return val;
+	}
+
+	@Scheduled(cron = "0/10 * * * * ?") // 每20秒执行一次
+	public void scheduler() {
+		logger.info("定时器执行任务 scheduled ... ");
 	}
 }
