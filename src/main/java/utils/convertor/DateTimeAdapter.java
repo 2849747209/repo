@@ -310,8 +310,14 @@ public class DateTimeAdapter implements Adapter {
 	@Override
 	public Object toObject() throws ClassCastException {
 		Date target = targetHolder.get();
+		return target;
+	}
+
+	@Override
+	public <T extends Enum<T>> T toEnum(Class<T> cls) throws ClassCastException {
+		Date target = targetHolder.get();
 		if (null != target) {
-			return target.toString();
+			throw new ClassCastException(target + " cannot be cast to java.lang.Enum");
 		} else {
 			return null;
 		}

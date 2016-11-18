@@ -346,4 +346,17 @@ public class IntegerAdapter implements Adapter {
 		Integer target = targetHolder.get();
 		return target;
 	}
+
+	@Override
+	public <T extends Enum<T>> T toEnum(Class<T> cls) throws ClassCastException {
+		Enum<? extends Enum>[] constants = Const.enumConstants.get(cls);
+		if (null == constants) {
+			constants = cls.getEnumConstants();
+			Const.enumConstants.put(cls, constants);
+		}
+
+		int ordinal = toint();
+
+		return (T) constants[ordinal];
+	}
 }

@@ -339,4 +339,14 @@ public class CharacterAdapter implements Adapter {
 		Character target = targetHolder.get();
 		return target;
 	}
+
+	@Override
+	public <T extends Enum<T>> T toEnum(Class<T> cls) throws ClassCastException {
+		Character target = targetHolder.get();
+		if (null != target) {
+			throw new ClassCastException(target + " cannot be cast to java.lang.Enum");
+		} else {
+			return null;
+		}
+	}
 }

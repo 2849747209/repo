@@ -3,15 +3,14 @@ package utils.convertor.test;
 /**
  * Created by admin on 2016/11/17.
  */
-public enum Season {
-	Spring("Spring is coming"),
-	Summer("Summer is coming"),
-	Autumn("Autumn is coming"),
-	Winter("Winter is coming");
+public enum Color {
+	Red("color is red"),
+	Green("color is green"),
+	Blue("color is blue");
 
 	private String describe;
 
-	private Season(String describe) {
+	private Color(String describe) {
 		this.describe = describe;
 	}
 

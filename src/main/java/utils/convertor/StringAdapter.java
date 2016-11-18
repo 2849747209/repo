@@ -1,5 +1,7 @@
 package utils.convertor;
 
+import utils.convertor.test.Season;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -430,5 +432,21 @@ public class StringAdapter implements Adapter {
 	public Object toObject() throws ClassCastException {
 		String target = targetHolder.get();
 		return target;
+	}
+
+	@Override
+	public <T extends Enum<T>> T toEnum(Class<T> cls) throws ClassCastException {
+		String target = targetHolder.get();
+		if (null != target) {
+			try {
+				return Enum.valueOf(cls, target);
+			} catch (IllegalArgumentException illegalArgumentException) {
+				throw new ClassCastException(illegalArgumentException.getMessage());
+			} catch (NullPointerException nullPointerException) {
+				throw new ClassCastException(nullPointerException.getMessage());
+			}
+		} else {
+			return null;
+		}
 	}
 }

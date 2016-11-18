@@ -306,8 +306,14 @@ public class TimeAdapter implements Adapter
 	@Override
 	public Object toObject() throws ClassCastException {
 		Time target = targetHolder.get();
+		return target;
+	}
+
+	@Override
+	public <T extends Enum<T>> T toEnum(Class<T> cls) throws ClassCastException {
+		Time target = targetHolder.get();
 		if (null != target) {
-			return target.toString();
+			throw new ClassCastException(target + " cannot be cast to java.lang.Enum");
 		} else {
 			return null;
 		}

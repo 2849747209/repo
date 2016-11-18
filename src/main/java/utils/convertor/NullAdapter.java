@@ -145,4 +145,9 @@ public class NullAdapter implements Adapter {
 	public Object toObject() throws ClassCastException {
 		return null;
 	}
+
+	@Override
+	public <T extends Enum<T>> T toEnum(Class<T> cls) throws ClassCastException {
+		return null;
+	}
 }

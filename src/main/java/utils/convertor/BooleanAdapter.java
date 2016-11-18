@@ -297,4 +297,14 @@ public class BooleanAdapter implements Adapter {
 		Boolean target = targetHolder.get();
 		return target;
 	}
+
+	@Override
+	public <T extends Enum<T>> T toEnum(Class<T> cls) throws ClassCastException {
+		Boolean target = targetHolder.get();
+		if (null != target) {
+			throw new ClassCastException(target + " cannot be cast to java.lang.Enum");
+		} else {
+			return null;
+		}
+	}
 }

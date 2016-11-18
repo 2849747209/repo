@@ -1,17 +1,12 @@
 package utils.convertor;
 
-import utils.convertor.test.Season;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ClassCast {
 	private final static ClassCast convertFactory = new ClassCast();
@@ -93,6 +88,10 @@ public class ClassCast {
 			
 			method = cls.getMethod("toString");
 			methodMapper.put(String.class, method);
+
+			method = cls.getMethod("toEnum", Class.class);
+			methodMapper.put(Enum.class, method);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -159,6 +158,9 @@ public class ClassCast {
 		
 		adapter = new StringAdapter();
 		adapterMapper.put(String.class, adapter);
+
+		adapter = new EnumAdapter();
+		adapterMapper.put(Enum.class, adapter);
 		
 		return adapterMapper;
 	}
@@ -166,44 +168,51 @@ public class ClassCast {
 	@SuppressWarnings("unchecked")
 	public static <T> T cast(Object object, Class<T> cls) {
 
-		Method method = convertFactory.methodMapper.get(cls);
-		if (null == method)
-			throw new ClassCastException(object + " cannot be cast to " + cls);
-
-		Adapter adapter;
-		if (null != object) {
-			adapter = convertFactory.adapterMapper.get(object.getClass());
-			if (null != adapter) {
-				adapter.setTarget(object);
+		if (null != cls) {
+			Adapter adapter;
+			if (null != object) {
+				adapter = convertFactory.adapterMapper.get(object.getClass());
 			} else {
+				adapter = convertFactory.adapterMapper.get(null);
+			}
+
+			if (null == adapter) {
+				if (Enum.class.isInstance(object)) {
+					adapter = convertFactory.adapterMapper.get(Enum.class);
+				} else {
+					throw new ClassCastException(object + " cannot be cast to " + cls);
+				}
+			}
+
+			adapter.setTarget(object);
+
+			Object[] params = null;
+			Method method;
+			if (cls.isEnum()) {
+				method = convertFactory.methodMapper.get(Enum.class);
+				params = new Object[] {cls};
+			} else {
+				method = convertFactory.methodMapper.get(cls);
+				if (null == method) {
+					throw new ClassCastException(object + " cannot be cast to " + cls);
+				}
+			}
+
+			try {
+				return (T) method.invoke(adapter, params);
+				//return cls.cast(method.invoke(adapter));
+			} catch (IllegalAccessException illegalAccessException) {
 				throw new ClassCastException(object + " cannot be cast to " + cls);
+			} catch (IllegalArgumentException illegalArgumentException) {
+				throw new ClassCastException(object + " cannot be cast to " + cls);
+			} catch (InvocationTargetException invocationTargetException) {
+				throw new ClassCastException(invocationTargetException.getTargetException().getMessage());
 			}
 		} else {
-			adapter = convertFactory.adapterMapper.get(null);
-		}
-
-		try {
-			return (T) method.invoke(adapter);
-			//return cls.cast(method.invoke(adapter));
-		} catch (IllegalAccessException illegalAccessException) {
-			throw new ClassCastException(object + " cannot be cast to " + cls);
-		} catch (IllegalArgumentException illegalArgumentException) {
-			throw new ClassCastException(object + " cannot be cast to " + cls);
-		} catch (InvocationTargetException invocationTargetException) {
-			throw new ClassCastException(invocationTargetException.getTargetException().getMessage());
+			throw new ClassCastException(object + " cannot be cast to null");
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		/*Class<?> cls = Class.forName("utils.convertor.test.Season");
-		System.out.println(cls.isEnum());
-		Object[] season = cls.getEnumConstants();
-		for (Object o : season) {
-			Enum<?> e = (Enum<?>) o;
-			System.out.println(e.getDeclaringClass());
-		}
-
-		System.out.println(Enum.valueOf(Season.class, "Winter"));
-		System.out.println();*/
-	}
+	/*public static void main(String[] args) throws Exception {
+	}*/
 }

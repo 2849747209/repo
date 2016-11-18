@@ -2,6 +2,9 @@ package utils.convertor;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by admin on 2016/11/17.
@@ -71,4 +74,6 @@ public class Const {
 	public static final String Date_Format = "yyyy-MM-dd";
 	public static final String Time_Format = "HH:mm:ss";
 	public static final String Timestamp_Format = "yyyy-MM-dd HH:mm:ss.SSS";
+
+	public static final Map<Class<? extends Enum>, Enum<? extends Enum>[]> enumConstants = new HashMap<>();
 }
