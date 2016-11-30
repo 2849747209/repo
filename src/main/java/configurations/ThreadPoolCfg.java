@@ -47,7 +47,7 @@ public class ThreadPoolCfg {
 	@Bean(name = "threadPool")
 	@Scope(value = WebApplicationContext.SCOPE_APPLICATION)
 	public ThreadPoolExecutor getThreadPoolExecutor() {
-		int coreSize = 10;
+		int coreSize = 2;
 		int maxSize = 256;
 		return new ThreadPoolExecutor(coreSize, maxSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
 	}

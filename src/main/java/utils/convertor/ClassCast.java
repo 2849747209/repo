@@ -104,7 +104,7 @@ public class ClassCast {
 		
 		Adapter adapter = new NullAdapter();
 		adapterMapper.put(null, adapter);
-		adapterMapper.put(Object.class, adapter);
+		//adapterMapper.put(Object.class, adapter);
 		
 		adapter = new BooleanAdapter();
 		adapterMapper.put(Boolean.class, adapter);
@@ -143,6 +143,7 @@ public class ClassCast {
 		
 		adapter = new BigDecimalAdapter();
 		adapterMapper.put(Number.class, adapter);
+		adapterMapper.put(BigDecimal.class, adapter);
 		
 		adapter = new DateTimeAdapter();
 		adapterMapper.put(Date.class, adapter);
@@ -161,7 +162,7 @@ public class ClassCast {
 
 		adapter = new EnumAdapter();
 		adapterMapper.put(Enum.class, adapter);
-		
+
 		return adapterMapper;
 	}
 	
@@ -212,7 +213,4 @@ public class ClassCast {
 			throw new ClassCastException(object + " cannot be cast to null");
 		}
 	}
-
-	/*public static void main(String[] args) throws Exception {
-	}*/
 }

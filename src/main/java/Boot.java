@@ -14,13 +14,13 @@ import java.sql.Timestamp;
 //@Configuration
 //@EnableAutoConfiguration
 //@ComponentScan(basePackages = {"configurations", "controllers", "services", "utils"})
-//@SpringBootApplication(scanBasePackages = {"configurations", "controllers", "services", "utils"})
+@SpringBootApplication(scanBasePackages = {"configurations", "controllers", "services", "utils"})
 //@EnableScheduling
 public class Boot {
 	public static void main(String[] args) throws Exception {
-		//SpringApplication.run(Boot.class, args);
-		long s = 1478854912000L;
-		Timestamp paytime = new Timestamp(s);
-		System.out.println(paytime);
+		SpringApplication.run(Boot.class, args);
+		//long s = 1478854912000L;
+		//Timestamp paytime = new Timestamp(s);
+		//System.out.println(paytime);
 	}
 }

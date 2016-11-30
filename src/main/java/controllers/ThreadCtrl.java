@@ -9,6 +9,7 @@ import services.Services;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -57,5 +58,41 @@ public class ThreadCtrl {
 		System.out.println(currentThread.getId() + " end");
 
 		return array;
+	}
+
+	@RequestMapping(value = "/lifecycle")
+	public void lifecycle() {
+		Thread currentThread = Thread.currentThread();
+		System.out.println(currentThread.getId() + " start");
+		CountDownLatch latch = new CountDownLatch(10);
+
+		Runnable target = new Runnable() {
+			private ThreadLocal<Integer> lifecycle = new ThreadLocal<Integer>();
+
+			public void run() {
+				Integer val = lifecycle.get();
+				if (null == val) {
+					ThreadLocalRandom random = ThreadLocalRandom.current();
+					Integer var = random.nextInt();
+					System.out.println(Thread.currentThread().getId() + " set val:" + var);
+					lifecycle.set(var);
+				} else {
+					System.out.println(Thread.currentThread().getId() + " find val not null");
+				}
+
+				latch.countDown();
+			}
+		};
+
+		for (int i=0; i<10; i++)
+			threadPool.execute(target);
+
+		try {
+			latch.await();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		System.out.println(currentThread.getId() + " end");
 	}
 }
