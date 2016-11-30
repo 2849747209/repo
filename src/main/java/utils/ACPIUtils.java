@@ -295,7 +295,7 @@ public class ACPIUtils {
 		return totalPclIst;
 	}
 
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		BigDecimal invest = new BigDecimal("6000"); // 本金
 		int month = 3;
 		BigDecimal yearRate = new BigDecimal("0.1008"); // 年利率
@@ -312,5 +312,5 @@ public class ACPIUtils {
 		BigDecimal principalInterestCount = getPclIstCount(invest, yearRate, month);
 		System.out.println("等额本息---本息总和：" + principalInterestCount);
 		System.out.println("月利率:" + yearRate.divide(new BigDecimal(12), defaultInterestRateScale, defaultInterestRateRoundingMode));
-	}*/
+	}
 }
