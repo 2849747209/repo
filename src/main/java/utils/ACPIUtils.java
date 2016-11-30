@@ -312,7 +312,5 @@ public class ACPIUtils {
 		BigDecimal principalInterestCount = getPclIstCount(invest, yearRate, month);
 		System.out.println("等额本息---本息总和：" + principalInterestCount);
 		System.out.println("月利率:" + yearRate.divide(new BigDecimal(12), defaultInterestRateScale, defaultInterestRateRoundingMode));
-
-		System.out.println("---dev---");
 	}
 }
