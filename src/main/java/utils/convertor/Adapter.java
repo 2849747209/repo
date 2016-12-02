@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public interface Adapter
@@ -31,8 +34,11 @@ public interface Adapter
 	public abstract BigDecimal				toBigDecimal() throws ClassCastException;
 	public abstract Number					toNumber() throws ClassCastException;
 	public abstract Date					toDateTime() throws ClassCastException;
+	public abstract LocalDateTime			toLocalDateTime() throws ClassCastException;
 	public abstract java.sql.Date			toDate() throws ClassCastException;
+	public abstract LocalDate				toLocalDate() throws ClassCastException;
 	public abstract Time					toTime() throws ClassCastException;
+	public abstract LocalTime				toLocalTime() throws ClassCastException;
 	public abstract Timestamp				toTimestamp() throws ClassCastException;
 	public abstract String					toString() throws ClassCastException;
 	public abstract <T extends Enum<T>> T	toEnum(Class<T> cls) throws ClassCastException;

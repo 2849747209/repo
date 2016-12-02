@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 public class ClassCast {
@@ -17,6 +20,8 @@ public class ClassCast {
 	private ClassCast() {
 		methodMapper = Collections.unmodifiableMap(getMethodMapper());
 		adapterMapper = Collections.unmodifiableMap(getAdapterMapper());
+
+		Formatter.init();
 	}
 	
 	private Map<Class<?>, Method> getMethodMapper() {
@@ -85,6 +90,13 @@ public class ClassCast {
 			methodMapper.put(Time.class, method);
 			method = cls.getMethod("toTimestamp");
 			methodMapper.put(Timestamp.class, method);
+
+			method = cls.getMethod("toLocalDateTime");
+			methodMapper.put(LocalDateTime.class, method);
+			method = cls.getMethod("LocalDate");
+			methodMapper.put(LocalDate.class, method);
+			method = cls.getMethod("LocalTime");
+			methodMapper.put(LocalTime.class, method);
 			
 			method = cls.getMethod("toString");
 			methodMapper.put(String.class, method);

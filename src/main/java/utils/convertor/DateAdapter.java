@@ -6,20 +6,16 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class DateAdapter implements Adapter {
 
 	private final ThreadLocal<Date> targetHolder;
 
-	private final String Date_Format;
-	private final ThreadLocal<SimpleDateFormat> dFmt;
-
 	public DateAdapter() {
 		this.targetHolder = new ThreadLocal<Date>();
-
-		this.Date_Format = Const.Date_Format;
-
-		this.dFmt = new ThreadLocal<SimpleDateFormat>();
 	}
 
 	@Override
@@ -255,13 +251,7 @@ public class DateAdapter implements Adapter {
 	public String toString() throws ClassCastException {
 		Date target = targetHolder.get();
 		if (null != target) {
-			SimpleDateFormat sdf = dFmt.get();
-			if (sdf == null) {
-				sdf = new SimpleDateFormat(Date_Format);
-				dFmt.set(sdf);
-			}
-
-			return sdf.format(target);
+			return Formatter.toDate(target);
 		} else {
 			return "";
 		}
@@ -278,9 +268,29 @@ public class DateAdapter implements Adapter {
 	}
 
 	@Override
+	public LocalDateTime toLocalDateTime() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public Date toDate() throws ClassCastException {
 		Date target = targetHolder.get();
 		return target;
+	}
+
+	@Override
+	public LocalDate toLocalDate() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime().toLocalDate();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -288,6 +298,16 @@ public class DateAdapter implements Adapter {
 		Date target = targetHolder.get();
 		if (null != target) {
 			return new Time(target.getTime());
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public LocalTime toLocalTime() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime().toLocalTime();
 		} else {
 			return null;
 		}

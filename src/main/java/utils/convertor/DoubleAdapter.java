@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class DoubleAdapter implements Adapter {
@@ -413,6 +416,16 @@ public class DoubleAdapter implements Adapter {
 	}
 
 	@Override
+	public LocalDateTime toLocalDateTime() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public java.sql.Date toDate() throws ClassCastException {
 		Double target = targetHolder.get();
 		if (null != target) {
@@ -433,6 +446,16 @@ public class DoubleAdapter implements Adapter {
 	}
 
 	@Override
+	public LocalDate toLocalDate() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime().toLocalDate();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public Time toTime() throws ClassCastException {
 		Double target = targetHolder.get();
 		if (null != target) {
@@ -449,6 +472,16 @@ public class DoubleAdapter implements Adapter {
 			}
 		} else {
 			throw new ClassCastException("null cannot be cast to java.sql.Time");
+		}
+	}
+
+	@Override
+	public LocalTime toLocalTime() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime().toLocalTime();
+		} else {
+			return null;
 		}
 	}
 

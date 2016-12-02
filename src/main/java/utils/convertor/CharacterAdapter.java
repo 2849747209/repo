@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class CharacterAdapter implements Adapter {
@@ -317,15 +320,33 @@ public class CharacterAdapter implements Adapter {
 	}
 
 	@Override
+	public LocalDateTime toLocalDateTime() throws ClassCastException {
+		Character target = targetHolder.get();
+		throw new ClassCastException(target + " cannot be cast to java.time.LocalDateTime");
+	}
+
+	@Override
 	public java.sql.Date toDate() throws ClassCastException {
 		Character target = targetHolder.get();
 		throw new ClassCastException(target + " cannot be cast to java.sql.Date");
 	}
 
 	@Override
+	public LocalDate toLocalDate() throws ClassCastException {
+		Character target = targetHolder.get();
+		throw new ClassCastException(target + " cannot be cast to java.time.LocalDate");
+	}
+
+	@Override
 	public Time toTime() throws ClassCastException {
 		Character target = targetHolder.get();
 		throw new ClassCastException(target + " cannot be cast to java.sql.Time");
+	}
+
+	@Override
+	public LocalTime toLocalTime() throws ClassCastException {
+		Character target = targetHolder.get();
+		throw new ClassCastException(target + " cannot be cast to java.time.LocalTime");
 	}
 
 	@Override

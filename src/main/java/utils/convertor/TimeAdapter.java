@@ -5,21 +5,16 @@ import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
-public class TimeAdapter implements Adapter
-{
+public class TimeAdapter implements Adapter {
 	private final ThreadLocal<Time> targetHolder;
-
-	private final String Time_Format;
-	private final ThreadLocal<SimpleDateFormat> tFmt;
 
 	public TimeAdapter() {
 		this.targetHolder = new ThreadLocal<Time>();
-
-		this.Time_Format = Const.Time_Format;
-
-		this.tFmt = new ThreadLocal<SimpleDateFormat>();
 	}
 
 	@Override
@@ -255,13 +250,7 @@ public class TimeAdapter implements Adapter
 	public String toString() throws ClassCastException {
 		Time target = targetHolder.get();
 		if (null != target) {
-			SimpleDateFormat sdf = tFmt.get();
-			if (sdf == null) {
-				sdf = new SimpleDateFormat(Time_Format);
-				tFmt.set(sdf);
-			}
-
-			return sdf.format(target);
+			return Formatter.toTime(target);
 		} else {
 			return "";
 		}
@@ -278,6 +267,16 @@ public class TimeAdapter implements Adapter
 	}
 
 	@Override
+	public LocalDateTime toLocalDateTime() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public java.sql.Date toDate() throws ClassCastException {
 		Time target = targetHolder.get();
 		if (null != target) {
@@ -288,9 +287,29 @@ public class TimeAdapter implements Adapter
 	}
 
 	@Override
+	public LocalDate toLocalDate() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime().toLocalDate();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public Time toTime() throws ClassCastException {
 		Time target = targetHolder.get();
 		return target;
+	}
+
+	@Override
+	public LocalTime toLocalTime() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime().toLocalTime();
+		} else {
+			return null;
+		}
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package utils.convertor;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.ZoneId;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,11 +70,6 @@ public class Const {
 
 	public static final BigInteger BigInteger_DOUBLE_MAX_VALUE = BigDecimal_DOUBLE_MAX_VALUE.toBigInteger();
 	public static final BigInteger BigInteger_DOUBLE_MIN_VALUE = new BigInteger(new byte[]{0x0});
-
-	public static final String Datetime_Format = "yyyy-MM-dd HH:mm:ss";
-	public static final String Date_Format = "yyyy-MM-dd";
-	public static final String Time_Format = "HH:mm:ss";
-	public static final String Timestamp_Format = "yyyy-MM-dd HH:mm:ss.SSS";
 
 	public static final Map<Class<? extends Enum>, Enum<? extends Enum>[]> enumConstants = new HashMap<>();
 }

@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class NullAdapter implements Adapter {
@@ -127,12 +130,27 @@ public class NullAdapter implements Adapter {
 	}
 
 	@Override
+	public LocalDateTime toLocalDateTime() throws ClassCastException {
+		return null;
+	}
+
+	@Override
 	public java.sql.Date toDate() throws ClassCastException {
 		return null;
 	}
 
 	@Override
+	public LocalDate toLocalDate() throws ClassCastException {
+		return null;
+	}
+
+	@Override
 	public Time toTime() throws ClassCastException {
+		return null;
+	}
+
+	@Override
+	public LocalTime toLocalTime() throws ClassCastException {
 		return null;
 	}
 

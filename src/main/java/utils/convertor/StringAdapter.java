@@ -1,40 +1,20 @@
 package utils.convertor;
 
-import utils.convertor.test.Season;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class StringAdapter implements Adapter {
 
 	private final ThreadLocal<String> targetHolder;
-
-	private final String Date_Format;
-	private final ThreadLocal<SimpleDateFormat> dFmt;
-	private final String Time_Format;
-	private final ThreadLocal<SimpleDateFormat> tFmt;
-	private final String Datetime_Format;
-	private final ThreadLocal<SimpleDateFormat> dtFmt;
-	private final String Timestamp_Format;
-	private final ThreadLocal<SimpleDateFormat> tsFmt;
 	
 	public StringAdapter() {
 		this.targetHolder = new ThreadLocal<String>();
-
-		this.Date_Format = Const.Date_Format;
-		this.Time_Format = Const.Time_Format;
-		this.Datetime_Format = Const.Datetime_Format;
-		this.Timestamp_Format = Const.Timestamp_Format;
-
-		this.dFmt = new ThreadLocal<SimpleDateFormat>();
-		this.tFmt = new ThreadLocal<SimpleDateFormat>();
-		this.dtFmt = new ThreadLocal<SimpleDateFormat>();
-		this.tsFmt = new ThreadLocal<SimpleDateFormat>();
 	}
 	
 	@Override
@@ -349,17 +329,17 @@ public class StringAdapter implements Adapter {
 	public Date toDateTime() throws ClassCastException {
 		String target = targetHolder.get();
 		if (null != target) {
-			try {
-				SimpleDateFormat sdf = dtFmt.get();
-				if (sdf == null) {
-					sdf = new SimpleDateFormat(Datetime_Format);
-					dtFmt.set(sdf);
-				}
+			return Formatter.parseDateTime(target);
+		} else {
+			return null;
+		}
+	}
 
-				return sdf.parse(target);
-			} catch (ParseException e) {
-				throw new ClassCastException(target + " cannot be cast to java.util.Date");
-			}
+	@Override
+	public LocalDateTime toLocalDateTime() throws ClassCastException {
+		String target = targetHolder.get();
+		if (null != target) {
+			return Formatter.parseLocalDateTime(target);
 		} else {
 			return null;
 		}
@@ -369,18 +349,17 @@ public class StringAdapter implements Adapter {
 	public java.sql.Date toDate() throws ClassCastException {
 		String target = targetHolder.get();
 		if (null != target) {
-			try {
-				SimpleDateFormat sdf = dFmt.get();
-				if (sdf == null) {
-					sdf = new SimpleDateFormat(Date_Format);
-					dFmt.set(sdf);
-				}
+			return Formatter.parseDate(target);
+		} else {
+			return null;
+		}
+	}
 
-				Date date = sdf.parse(target);
-				return new java.sql.Date(date.getTime());
-			} catch (ParseException e) {
-				throw new ClassCastException(target + " cannot be cast to java.sql.Date");
-			}
+	@Override
+	public LocalDate toLocalDate() throws ClassCastException {
+		String target = targetHolder.get();
+		if (null != target) {
+			return Formatter.parseLocalDate(target);
 		} else {
 			return null;
 		}
@@ -390,18 +369,17 @@ public class StringAdapter implements Adapter {
 	public Time toTime() throws ClassCastException {
 		String target = targetHolder.get();
 		if (null != target) {
-			try {
-				SimpleDateFormat sdf = tFmt.get();
-				if (sdf == null) {
-					sdf = new SimpleDateFormat(Time_Format);
-					tFmt.set(sdf);
-				}
+			return Formatter.parseTime(target);
+		} else {
+			return null;
+		}
+	}
 
-				Date date = sdf.parse(target);
-				return new Time(date.getTime());
-			} catch (ParseException e) {
-				throw new ClassCastException(target + " cannot be cast to java.sql.Time");
-			}
+	@Override
+	public LocalTime toLocalTime() throws ClassCastException {
+		String target = targetHolder.get();
+		if (null != target) {
+			return Formatter.parseLocalTime(target);
 		} else {
 			return null;
 		}
@@ -411,18 +389,7 @@ public class StringAdapter implements Adapter {
 	public Timestamp toTimestamp() throws ClassCastException {
 		String target = targetHolder.get();
 		if (null != target) {
-			try {
-				SimpleDateFormat sdf = tsFmt.get();
-				if (sdf == null) {
-					sdf = new SimpleDateFormat(Timestamp_Format);
-					tsFmt.set(sdf);
-				}
-
-				Date date = sdf.parse(target);
-				return new Timestamp(date.getTime());
-			} catch (ParseException e) {
-				throw new ClassCastException(target + " cannot be cast to java.sql.Timestamp");
-			}
+			return Formatter.parseTimestamp(target);
 		} else {
 			return null;
 		}

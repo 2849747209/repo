@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 
 public class BooleanAdapter implements Adapter {
 	private final ThreadLocal<Boolean> targetHolder;
@@ -273,8 +277,13 @@ public class BooleanAdapter implements Adapter {
 	}
 
 	@Override
-	public java.util.Date toDateTime() throws ClassCastException {
+	public Date toDateTime() throws ClassCastException {
 		throw new ClassCastException("java.lang.Boolean cannot be cast to java.util.Date");
+	}
+
+	@Override
+	public LocalDateTime toLocalDateTime() throws ClassCastException {
+		throw new ClassCastException("java.lang.Boolean cannot be cast to java.time.LocalDateTime");
 	}
 
 	@Override
@@ -283,8 +292,18 @@ public class BooleanAdapter implements Adapter {
 	}
 
 	@Override
+	public LocalDate toLocalDate() throws ClassCastException {
+		throw new ClassCastException("java.lang.Boolean cannot be cast to java.time.LocalDate");
+	}
+
+	@Override
 	public Time toTime() throws ClassCastException {
 		throw new ClassCastException("java.lang.Boolean cannot be cast to java.sql.Time");
+	}
+
+	@Override
+	public LocalTime toLocalTime() throws ClassCastException {
+		throw new ClassCastException("java.lang.Boolean cannot be cast to java.time.LocalTime");
 	}
 
 	@Override

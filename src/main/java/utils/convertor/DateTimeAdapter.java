@@ -5,21 +5,17 @@ import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class DateTimeAdapter implements Adapter {
 
 	private final ThreadLocal<Date> targetHolder;
 
-	private final String Datetime_Format;
-	private final ThreadLocal<SimpleDateFormat> dtFmt;
-
 	public DateTimeAdapter() {
 		this.targetHolder = new ThreadLocal<Date>();
-
-		this.Datetime_Format = Const.Datetime_Format;
-
-		this.dtFmt = new ThreadLocal<SimpleDateFormat>();
 	}
 
 	@Override
@@ -255,13 +251,7 @@ public class DateTimeAdapter implements Adapter {
 	public String toString() throws ClassCastException {
 		Date target = targetHolder.get();
 		if (null != target) {
-			SimpleDateFormat sdf = dtFmt.get();
-			if (sdf == null) {
-				sdf = new SimpleDateFormat(Datetime_Format);
-				dtFmt.set(sdf);
-			}
-
-			return sdf.format(target);
+			return Formatter.toDateTime(target);
 		} else {
 			return "";
 		}
@@ -278,6 +268,16 @@ public class DateTimeAdapter implements Adapter {
 	}
 
 	@Override
+	public LocalDateTime toLocalDateTime() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public java.sql.Date toDate() throws ClassCastException {
 		Date target = targetHolder.get();
 		if (null != target) {
@@ -288,10 +288,30 @@ public class DateTimeAdapter implements Adapter {
 	}
 
 	@Override
+	public LocalDate toLocalDate() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime().toLocalDate();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public Time toTime() throws ClassCastException {
 		Date target = targetHolder.get();
 		if (null != target) {
 			return new Time(target.getTime());
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public LocalTime toLocalTime() throws ClassCastException {
+		Timestamp target = toTimestamp();
+		if (null != target) {
+			return target.toLocalDateTime().toLocalTime();
 		} else {
 			return null;
 		}
