@@ -10,6 +10,7 @@
     <logger name="org.springframework.web" level="warn"/>
     <logger name="ch.qos.logback" level="warn"/>
 
+    <logger name="filters.CorsFilter" level="debug"/>
     <root level="info">
         <appender-ref ref="console"/>
     </root>

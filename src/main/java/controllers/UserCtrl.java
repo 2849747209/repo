@@ -1,15 +1,15 @@
 package controllers;
 
 import beans.User;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import utils.NumberUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by admin on 2016/8/19.
@@ -37,13 +37,25 @@ public class UserCtrl {
 		throw new NullPointerException("这是测试用的空指针异常");
 	}
 
-	/*public static void main(String[] args) {
-		LocalDate date = LocalDate.of(2016, 10, 20);
-		System.out.println(date);
-		LocalTime time = LocalTime.of(0, 0, 1);
-		System.out.println(time);
-		DateTimeFormatter dtfmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime dateTime = LocalDateTime.now();
-		System.out.println(dateTime.format(dtfmt));
-	}*/
+	@RequestMapping("/params")
+	public String getParams(HttpServletRequest request, HttpServletResponse response) {
+		StringBuilder builder = new StringBuilder();
+		HttpSession session = request.getSession();
+		if (null != session) {
+			System.out.println("sessionId:" + session.getId());
+			builder.append("sessionId:").append(session.getId()).append(",");
+		}
+
+		String token = request.getHeader("x-auth-token");
+		if (null != token) {
+			System.out.println("x-auth-token:" + token);
+			builder.append("x-auth-token:").append(token);
+		}
+
+		ThreadLocalRandom random = ThreadLocalRandom.current();
+		String number = String.valueOf(random.nextLong());
+		response.setHeader("myToken", number);
+
+		return builder.toString();
+	}
 }
