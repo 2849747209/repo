@@ -152,8 +152,8 @@ public final class CorsFilter implements Filter {
 			case DELETE:
 			case TRACE:
 			case CONNECT:
-				chain.doFilter(request, response);
-				//handleInvalid(request, response, chain);
+				//chain.doFilter(request, response);
+				handleInvalid(request, response, chain);
 			default:
 				break;
 		}
@@ -169,7 +169,12 @@ public final class CorsFilter implements Filter {
 			String supportsCredentials = filterConfig.getInitParameter(PARAM_CORS_SUPPORT_CREDENTIALS);
 			String preflightMaxAge = filterConfig.getInitParameter(PARAM_CORS_PREFLIGHT_MAXAGE);
 
-			parseAndStore(allowedOrigins, allowedHttpMethods, allowedHttpHeaders, exposedHeaders, supportsCredentials, preflightMaxAge);
+			parseAndStore(allowedOrigins,
+						  allowedHttpMethods,
+						  allowedHttpHeaders,
+						  exposedHeaders,
+						  supportsCredentials,
+						  preflightMaxAge);
 		} else {
 			throw new NullPointerException("filterConfig is null");
 		}
@@ -266,8 +271,6 @@ public final class CorsFilter implements Filter {
 		 * with either the value of the Origin header or the string "*" as value.
 		 * (1)note:The string "*" cannot be used for a resource that supports credentials.
 		 */
-		/**
-		 * mynote:this resource processing model may be wrong
 		if (supportsCredentials) {
 			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
@@ -277,15 +280,6 @@ public final class CorsFilter implements Filter {
 			} else {
 				response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 			}
-		}
-		 */
-		if (anyOriginAllowed) {
-			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-		} else {
-			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-		}
-		if (supportsCredentials) {
-			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 		}
 
 		/**
@@ -358,8 +352,6 @@ public final class CorsFilter implements Filter {
 		 * with either the value of the Origin header or the string "*" as value.
 		 * (1)note:The string "*" cannot be used for a resource that supports credentials.
 		 */
-		/**
-		 * mynote:this resource processing model may be wrong
 		 if (supportsCredentials) {
 			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
@@ -370,15 +362,6 @@ public final class CorsFilter implements Filter {
 				response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 			}
 		 }
-		 */
-		if (anyOriginAllowed) {
-			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-		} else {
-			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-		}
-		if (supportsCredentials) {
-			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-		}
 
 		/**
 		 * If the list of exposed headers is not empty add one or more Access-Control-Expose-Headers headers,
@@ -387,7 +370,7 @@ public final class CorsFilter implements Filter {
 		 *    of all entries where origin is a case-sensitive match for the value of the Origin header
 		 *    and url is a case-sensitive match for the URL of the resource.
 		 */
-		if ((exposedHeaders != null) && (exposedHeaders.size() > 0)) {
+		if (exposedHeaders.size() > 0) {
 			String exposedHeadersString = join(exposedHeaders, ",");
 			response.addHeader(RESPONSE_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS, exposedHeadersString);
 		}
@@ -821,7 +804,7 @@ public final class CorsFilter implements Filter {
 			target.append(port);
 		}
 
-		return origin.equalsIgnoreCase(target.toString());
+		return origin.equals(target.toString());
 	}
 
 
@@ -1156,6 +1139,7 @@ public final class CorsFilter implements Filter {
 	 * Enumerates varies types of CORS requests. Also, provides utility methods
 	 * to determine the request type.
 	 */
+	@Deprecated
 	protected static enum CORSRequestType {
 		/**
 		 * A simple HTTP request, i.e. it shouldn't be pre-flighted.

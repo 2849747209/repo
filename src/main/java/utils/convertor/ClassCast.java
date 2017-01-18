@@ -185,16 +185,16 @@ public class ClassCast {
 			Adapter adapter;
 			if (null != object) {
 				adapter = convertFactory.adapterMapper.get(object.getClass());
+
+				if (null == adapter) {
+					if (Enum.class.isInstance(object)) {
+						adapter = convertFactory.adapterMapper.get(Enum.class);
+					} else {
+						throw new ClassCastException(object + " cannot be cast to " + cls);
+					}
+				}
 			} else {
 				adapter = convertFactory.adapterMapper.get(null);
-			}
-
-			if (null == adapter) {
-				if (Enum.class.isInstance(object)) {
-					adapter = convertFactory.adapterMapper.get(Enum.class);
-				} else {
-					throw new ClassCastException(object + " cannot be cast to " + cls);
-				}
 			}
 
 			adapter.setTarget(object);

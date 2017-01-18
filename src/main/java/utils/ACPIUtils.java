@@ -296,7 +296,7 @@ public class ACPIUtils {
 	}
 
 	public static void main(String[] args) {
-		BigDecimal invest = new BigDecimal("6000"); // 本金
+		BigDecimal invest = new BigDecimal("2000"); // 本金
 		int month = 3;
 		BigDecimal yearRate = new BigDecimal("0.1008"); // 年利率
 		Map<Integer, BigDecimal> mapInterest = getPerMonIst(invest, yearRate, month);
